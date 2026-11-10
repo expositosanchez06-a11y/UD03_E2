@@ -1,0 +1,36 @@
+services:
+  app:
+    build: .
+    image: mi-app-tomcat:1.0
+    container_name: mi-app
+    ports:
+      - "8081:8080"
+    environment:
+      DB_HOST: db
+      DB_NAME: daw
+      DB_USER: daw
+      DB_PASSWORD: daw123
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+  db:
+    image: mysql:8.0
+    container_name: mi-bbdd
+    environment:
+      MYSQL_DATABASE: daw
+      MYSQL_USER: daw
+      MYSQL_PASSWORD: daw123
+      MYSQL_ROOT_PASSWORD: root123
+    volumes:
+      - datos_mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+
+volumes:
+  datos_mysql:
